@@ -2,21 +2,21 @@
 
 int main () {
 	Afn automato;
-	string qe, ei, ef, cadeia,tri,trf,trs;
+	string qe, ei, ef, alf,tri,trf,trs;
 	char fim='s';
 
-	cout << "Digite a quantidade de estados " << endl;
+	cout << "Digite os estados ('q1,q2,q3....')" << endl;
 	cin >> qe;
 	cout << "Digite estado inicial " << endl;
 	cin >> ei;
 	cout << "Digite estado(s) final(s)" << endl;
 	cin >> ef;
-	cout << "Digite a cadeia" << endl;
-	cin >> cadeia;
+	cout << "Digite o alfabeto" << endl;
+	cin >> alf;
 	automato.addEstados(qe);
 	automato.setEstadoInicial(ei);
 	automato.addEstadosFinais(ef);
-	automato.addSimbolos(cadeia);
+	automato.addSimbolos(alf);
 
 	while(fim == 's'){
     cout << "Digite as transicoes (De - Para - Simbolo)" << endl;
