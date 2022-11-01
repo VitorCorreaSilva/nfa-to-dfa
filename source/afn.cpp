@@ -122,7 +122,10 @@ string Afn::verificaEstado ( string estado ){
 	vector <string> picotado = picotar(estado);
 	string retorno = "";
 
-	if ( picotado.size() == 1 && picotado[0] == estadoInicial ) retorno += "->";
+	if ( picotado.size() == 1 && picotado[0] == estadoInicial ) {
+		retorno += "->";
+	}
+	int f = picotado.size();
 
 	bool final = false;
 	int ps = picotado.size();
