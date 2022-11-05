@@ -1,5 +1,7 @@
-#include <iostream>
 #include <vector>
+#include <fstream>
+
+#include <iostream>
 #include <map>
 #include <queue>
 
@@ -9,25 +11,34 @@
 using namespace std;
 
 class Afn{
-	private:
-		string estadoInicial;
-		vector<string> estados;
-		vector<string> terminais;
-		vector<string> estadosfinais; 
-		map<string,int> ::iterator it;
-		string matriz[QTD_ESTADOS][QTD_SIMBOLOS];
-		vector<string> AFD;
-		queue<string> estadoparaconversao;		
-		vector<string> picotar (string modelo );
 	public:
-		Afn();
-		void addEstados(string conjuntoDeEstados);
-		void addEstadosFinais(string conjuntoDeEstadosFinais);
-		void addSimbolos(string conjuntoDeSimbolos);
-		void setEstadoInicial(string estadoInicial);
-		void addTransicao(string inicio, string fim, string simbolo);
+		vector<string> estadosIniciais;
+		vector<string> estados;
+		vector<string> simbolos;
+		vector<string> estadosFinais; 
+		string matriz[QTD_ESTADOS][QTD_SIMBOLOS];
+
+		vector<string> picotar(string modelo);
 		int getIndiceEstado(string estado);
 		int getIndiceSimbolo(string simbolo);
+		bool verificaEstadoFinal(string estado);
+		bool verificaEstadoInicial(string estado);
+				
+		vector<string> AFD;
+		map<string,int> ::iterator it;
+		queue<string> estadoparaconversao;		
+		
+	public:
+		Afn();
+		Afn(string arquivo);
+		void imprimir();
+		void addEstados(string estados);
+		void addEstadosFinais(string estadosFinais);
+		void addSimbolos(string simbolos);
+		void addTransicao(string transicao);
+		void addEstadosIniciais(string estadosIniciais);
+		
+
 		string pegarPossibilidades(string estado);
 		void possibilidades(map <string,int> &mapa, string estado);
 		void imprimirMatriz();
@@ -35,5 +46,6 @@ class Afn{
 		string adjacentes(string estado, string simbolo);
 		string fatiar(string estado, string simbolo);
 		string verificaEstado(string estado);
+
 		void converter();
 };

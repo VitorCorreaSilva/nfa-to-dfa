@@ -2,42 +2,78 @@
 
 Afn::Afn(){}
 
-void Afn::addEstados ( string conjuntoDeEstados ){
-	estados = picotar(conjuntoDeEstados);
+Afn::Afn(string caminho){
+	ifstream file;
+	string entrada;
+
+	file.open(caminho);
+
+	getline(file, entrada);
+    this->addEstados(entrada);
+
+    getline(file, entrada);
+    this->addEstadosIniciais(entrada);
+
+    getline(file, entrada);
+    this->addEstadosFinais(entrada);
+
+    getline(file, entrada);
+    this->addSimbolos(entrada);
+
+	while(!file.eof()){
+    	getline(file, entrada);
+		this->addTransicao(entrada);
+	}
 }
 
-void Afn::addEstadosFinais ( string conjuntoDeEstadosFinais ){
-	estadosfinais = picotar(conjuntoDeEstadosFinais);
+void Afn::addEstados ( string estados ){
+	this->estados = picotar(estados);
 }
 
-void Afn::addSimbolos ( string conjuntoDeSimbolos ){
-	terminais = picotar(conjuntoDeSimbolos);
+void Afn::addEstadosFinais ( string estadosFinais ){
+	this->estadosFinais = picotar(estadosFinais);
 }
 
-void Afn::setEstadoInicial ( string estadoInicial ){
-	estadoInicial = estadoInicial;
-	estadoparaconversao.push(estadoInicial);
+void Afn::addSimbolos ( string simbolos ){
+	this->simbolos = picotar(simbolos);
 }
 
-void Afn::addTransicao ( string inicio, string fim, string simbolo ){
+void Afn::addEstadosIniciais(string estadosIniciais){
+	this->estadosIniciais = picotar(estadosIniciais);
+	int s = this->estadosIniciais.size();
+	for (int i = 0; i < s; ++i)
+	{
+		estadoparaconversao.push(this->estadosIniciais[i]);
+	}
+}
+
+void Afn::addTransicao ( string transicao ){
+	vector<string> t = picotar(transicao);
+	string inicio = t[0];
+	string fim = t[1];
+	string simbolo = t[2];
+
 	if ( matriz[getIndiceEstado(inicio)][getIndiceSimbolo(simbolo)].size() == 0 ){
 		matriz[getIndiceEstado(inicio)][getIndiceSimbolo(simbolo)] = fim;
 	} else {
-		matriz[getIndiceEstado(inicio)][getIndiceSimbolo(simbolo)] += ", " + fim;
+		matriz[getIndiceEstado(inicio)][getIndiceSimbolo(simbolo)] += "," + fim;
 	}
 }
 
 int Afn::getIndiceEstado ( string estado ){
 	int es = estados.size();
-	for(int i=0;i<es;i++){
-		if ( estados[i] == estado ) return i;
+	for (int i = 0; i < es; ++i){
+		if ( estados[i] == estado ) {
+			return i;
+		}
 	}
 	return 0;
 }
+
 int Afn::getIndiceSimbolo ( string simbolo ){
-	int ts = terminais.size();
-	for(int i=0;i<ts;i++){
-		if ( terminais[i] == simbolo ) {
+	int ts = simbolos.size();
+	for (int i = 0; i < ts; ++i){
+		if ( simbolos[i] == simbolo ) {
 			return i;
 		}
 	}
@@ -71,10 +107,10 @@ void Afn::possibilidades ( map <string,int> & mapa, string estado ){
 
 void Afn::imprimirMatriz(){
 	int es = estados.size();
-	int ts = terminais.size();
+	int ts = simbolos.size();
 	for(int i=0;i<es;i++){
 		for(int j=0;j<ts;j++){
-			cout << estados[i] << "-" << terminais[j] << " = " << matriz[getIndiceEstado(estados[i])][getIndiceSimbolo(terminais[j])] << endl;
+			cout << estados[i] << "-" << simbolos[j] << " = " << matriz[getIndiceEstado(estados[i])][getIndiceSimbolo(simbolos[j])] << endl;
 		}
 		cout << endl;
 	}
@@ -122,17 +158,16 @@ string Afn::verificaEstado ( string estado ){
 	vector <string> picotado = picotar(estado);
 	string retorno = "";
 
-	if ( picotado.size() == 1 && picotado[0] == estadoInicial ) {
-		retorno += "->";
-	}
-	int f = picotado.size();
+	//if ( picotado.size() == 1 && picotado[0] == estadoInicial ) {
+	//	retorno += "->";
+	//}
 
 	bool final = false;
 	int ps = picotado.size();
-	int efs = estadosfinais.size();
+	int efs = estadosFinais.size();
 	for(int i=0;i<ps;i++){
 		for(int j=0;j<efs;j++){
-			if ( picotado[i] == estadosfinais[j]) final = true;
+			if ( picotado[i] == estadosFinais[j]) final = true;
 		}
 	}
 	if ( final == true ) return (retorno + "*");
@@ -142,14 +177,14 @@ string Afn::verificaEstado ( string estado ){
 void Afn::converter () {
 	map < string, int > mapa;
 	map < string, int> :: iterator it;
-	int ts = terminais.size();
+	int ts = simbolos.size();
 	while ( !estadoparaconversao.empty() ){
 		string estado = estadoparaconversao.front();
 		estadoparaconversao.pop();
 		for(int i=0;i<ts;i++){
-			if ( terminais[i] != "*" ){
-				string final = fatiar(estado,terminais[i]);
-				string query = verificaEstado(estado) + "{ " + estado + " } (" + terminais[i] + ") = {" + final + "}";
+			if ( simbolos[i] != "*" ){
+				string final = fatiar(estado,simbolos[i]);
+				string query = verificaEstado(estado) + "{ " + estado + " } (" + simbolos[i] + ") = {" + final + "}";
 				it = mapa.find(query);
 				if ( it == mapa.end() && estado != "" ){
 					estadoparaconversao.push(final);
@@ -168,9 +203,11 @@ vector<string> Afn::picotar ( string modelo ) {
 	string aux = "";
 	int ms = modelo.size();
 
-	for(int i=0;i<ms;i++){
+	for (int i = 0; i < ms; ++i){
 		if ( modelo[i] == ',' || modelo[i] == ' ' ){
-			if ( aux != "" ) retorno.push_back(aux);
+			if ( aux != "" ) {
+				retorno.push_back(aux);
+			}			
 			aux = "";
 		} else { 
 			aux += modelo[i];
@@ -178,8 +215,67 @@ vector<string> Afn::picotar ( string modelo ) {
 
 		int var_ms = modelo.size() - 1;
 		if ( i == var_ms ){
-			if ( aux != "" ) retorno.push_back(aux);
+			if ( aux != "" ){
+				retorno.push_back(aux);
+			} 
 		}
 	}
 	return retorno;
+}
+
+void Afn::imprimir(){
+	string texto = "";
+	int s = simbolos.size();
+	int e = estados.size();
+	
+	for (int i = 0; i < s; ++i)
+	{
+		texto += "\t " + simbolos[i];
+	}
+	texto += "\n";
+
+	for (int i = 0; i < e; ++i)
+	{
+		if(verificaEstadoInicial(estados[i])){
+			texto += "->" + estados[i];
+		}
+		else{
+			if(verificaEstadoFinal(estados[i])){
+				texto += "*" + estados[i];
+			}
+			else{
+				texto += estados[i];
+			}
+		}
+
+		for (int j = 0; j < s; ++j)
+		{
+			texto += "\t" + matriz[i][j] ;
+		}
+		texto += "\n";
+	}
+
+	cout << texto;
+}
+
+bool Afn::verificaEstadoFinal(string estado){
+	int e = estadosFinais.size();
+	for (int i = 0; i < e; ++i)
+	{
+		if(estado == estadosFinais[i]){
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Afn::verificaEstadoInicial(string estado){
+	int e = estadosIniciais.size();
+	for (int i = 0; i < e; ++i)
+	{
+		if(estado == estadosIniciais[i]){
+			return true;
+		}
+	}
+	return false;
 }

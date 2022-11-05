@@ -1,34 +1,17 @@
 #include "../header/afn.hpp"
 
 int main () {
-	Afn automato;
-	string qe, ei, ef, alf,tri,trf,trs;
-	char fim='s';
+	Afn automato("entrada");
 
-	cout << "Digite os estado(q1,q2,q3 ...) " << endl;
-	cin >> qe;
-	cout << "Digite estado inicial" << endl;
-	cin >> ei;
-	cout << "Digite estado(s) final(s)" << endl;
-	cin >> ef;
-	cout << "Digite o alfabeto(* representa o vazio)" << endl;
-	cin >> alf;
-	automato.addEstados(qe);
-	automato.setEstadoInicial(ei);
-	automato.addEstadosFinais(ef);
-	automato.addSimbolos(alf);
+	vector<string> e;
 
-	while(fim == 's'){
-    cout << "Digite as transicoes (De - Para - Simbolo)" << endl;
-	cin >> tri;
-	cin >> trf;
-	cin >> trs;
-	automato.addTransicao(tri,trf,trs);
-	cout << "Digite s para nova n para finalizar " << endl;
-	cin >> fim;	
-	system("clear");
-	};
-	
+	int t = automato.estados.size();
+	for (int i = 0; i < t; ++i)
+	{
+		cout << automato.estados[i] << endl;
+	}
 
-	automato.converter();
+
+
+	//automato.imprimir();
 }

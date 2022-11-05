@@ -1,5 +1,5 @@
 # Name of the project
-PROJ_NAME=lfa
+PROJ_NAME=nfa-to-dfa
 
 # .cpp files
 C_SOURCE=$(wildcard ./source/*.cpp)
