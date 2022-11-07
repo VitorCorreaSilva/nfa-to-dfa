@@ -1,17 +1,20 @@
 #include "../header/afn.hpp"
+#include "../header/afd.hpp"
+#include "../header/funcoes.hpp"
+
 
 int main () {
-	Afn automato("entrada");
+	Funcoes f;
+	string text;
+	Afn afn("entrada");
 
-	vector<string> e;
+	Afd afd(afn);
 
-	int t = automato.estados.size();
-	for (int i = 0; i < t; ++i)
-	{
-		cout << automato.estados[i] << endl;
-	}
+	afd.verificaMatriz();
+
+	afd.imprimir();	
 
 
 
-	//automato.imprimir();
+	
 }
